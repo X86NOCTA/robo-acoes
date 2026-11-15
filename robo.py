@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Robô de Ações — sinais diários de compra e venda (swing trade).
+HORUS (antigo Robô de Ações) — sinais diários de compra e venda (swing trade).
 
 Como funciona, em poucas palavras:
   1. Baixa o histórico diário (5 anos) de cada ação da lista acoes.txt.
@@ -22,7 +22,7 @@ PASTA = os.path.dirname(os.path.abspath(__file__))
 DADOS = os.path.join(os.path.expanduser("~"), ".robo-acoes")
 os.makedirs(os.path.join(DADOS, "cache"), exist_ok=True)
 PORTA = 8765
-VERSAO = "1.2.1"
+VERSAO = "1.3.0"
 QTD_LISTA = 30            # quantas ações entram na lista quando você clica em "Atualizar lista"
 DIAS_LISTA_VELHA = 30     # depois disso o robô avisa que a lista está velha
 ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "README.md"}
@@ -206,7 +206,7 @@ def baixar_yahoo(ticker):
 
 def diagnostico():
     """python3 robo.py --diagnostico  → testa a conexão com as fontes de cotação."""
-    print(f"Robô de Ações {VERSAO} — teste de conexão\n")
+    print(f"HORUS {VERSAO} — teste de conexão\n")
     def teste(nome, fn):
         t = time.time()
         try:
@@ -880,7 +880,7 @@ def instalar_zip(dados):
         if base in ARQUIVOS_DO_ROBO:
             achados[base] = nome
     if not {"robo.py", "pagina.html", "versao.json"} <= set(achados):
-        raise RuntimeError("Esse .zip não parece ser do Robô de Ações (faltam arquivos).")
+        raise RuntimeError("Esse .zip não parece ser do Horus (faltam arquivos).")
     try:
         nova = json.loads(z.read(achados["versao.json"]).decode("utf-8"))
     except Exception:
@@ -1061,14 +1061,14 @@ def main():
     try:
         SRV = ThreadingHTTPServer(("127.0.0.1", PORTA), Handler)
     except OSError:
-        print("O robô já está aberto. Abrindo o navegador…")
+        print("O Horus já está aberto. Abrindo o navegador…")
         webbrowser.open(url)
         return
     # mostra o último resultado salvo enquanto calcula o novo
     ESTADO["resultado"] = ler_json(os.path.join(DADOS, "ultimo_resultado.json"))
     threading.Thread(target=rodar, daemon=True).start()
     threading.Thread(target=vigia, daemon=True).start()
-    print(f"Robô de Ações {VERSAO} rodando em {url}")
+    print(f"HORUS {VERSAO} rodando em {url}")
     print("Deixe esta janela aberta enquanto usa. Para fechar, aperte Ctrl+C.")
     if "--sem-navegador" not in sys.argv:
         threading.Timer(1.0, lambda: webbrowser.open(url)).start()

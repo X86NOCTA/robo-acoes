@@ -3,115 +3,184 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Robô de Ações</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80' aria-label='Olho de Horus' role='img'> <defs><linearGradient id='gOlho' x1='0' x2='1'><stop offset='0' stop-color='%2300f0ff'/><stop offset='1' stop-color='%23ff2bd6'/></linearGradient></defs> <g fill='none' stroke='url(%23gOlho)' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'> <path d='M14 14 Q52 2 104 12'/> <path d='M10 34 Q40 14 70 18 Q92 21 106 32'/> <path d='M10 34 Q40 50 70 46 Q90 43 106 32'/> <path d='M106 32 L116 32'/> <path d='M40 46 L32 72'/> <path d='M62 47 Q66 60 78 62 Q90 62 90 52 Q89 45 82 46 Q76 48 79 54'/> </g> <circle cx='56' cy='32' r='10' fill='%23ff2bd6'/><circle cx='56' cy='32' r='4' fill='%2305060a'/><circle cx='60' cy='28' r='2.2' fill='%23fff'/> </svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>HORUS — Olho do Mercado</title>
 <style>
-:root{--bg:#f4f4f2;--card:#fff;--borda:#e0dfd9;--txt:#111;--txt2:#555;--verde:#0a8a4a;--verde-bg:#e6f5ec;--verm:#c93534;--verm-bg:#fbe9e8;--amar:#a86b00;--amar-bg:#fdf3dc;--azul:#2a78d6}
-@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1d1d1b;--borda:#33322e;--txt:#f0efec;--txt2:#b8b7ae;--verde:#3cc27c;--verde-bg:#15301f;--verm:#ef6b6a;--verm-bg:#3a1e1e;--amar:#e0a833;--amar-bg:#362a10;--azul:#4f93e8}}
+:root{
+  color-scheme:dark;
+  --bg:#05060a;--card:#0b0f1a;--card2:#0f1526;--borda:#1d2a44;--txt:#e6f1ff;--txt2:#8aa0c4;
+  --ciano:#00f0ff;--rosa:#ff2bd6;--amar:#ffd23d;--verde:#39ff88;--verm:#ff3864;--azul:#00f0ff;
+  --verde-bg:rgba(57,255,136,.10);--verm-bg:rgba(255,56,100,.12);--amar-bg:rgba(255,210,61,.10);
+  --mono:"Share Tech Mono",ui-monospace,monospace;--disp:"Orbitron",system-ui,sans-serif;--corpo:"Rajdhani",system-ui,sans-serif;
+  --corte:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
-h1{margin:0;font-size:26px}
-h2{font-size:20px;margin:28px 0 4px}
-.sub{color:var(--txt2);margin:2px 0 0}
-.topo{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:16px;margin-top:16px}
-label{display:flex;flex-direction:column;font-size:14px;color:var(--txt2);gap:4px}
-input{font:inherit;padding:8px 10px;border:1px solid var(--borda);border-radius:8px;width:170px;background:var(--card);color:var(--txt)}
-button{font:inherit;font-weight:600;padding:9px 16px;border-radius:9px;border:0;background:var(--azul);color:#fff;cursor:pointer}
-button:disabled{opacity:.5}
-.status{margin-top:12px;color:var(--txt2);font-size:15px}
-.barra{height:8px;background:var(--borda);border-radius:9px;overflow:hidden;margin-top:6px;max-width:400px}
-.barra i{display:block;height:100%;background:var(--azul);width:0}
-.dica{font-size:14px;color:var(--txt2);margin:0 0 10px}
-.card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:16px 18px;margin:10px 0;border-left:6px solid var(--borda)}
-.card.comprar{border-left-color:var(--verde)} .card.vender{border-left-color:var(--verm)} .card.manter{border-left-color:var(--amar)}
-.cab{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.pos{font-size:14px;color:var(--txt2);font-weight:600}
-.tk{font-size:26px;font-weight:800;letter-spacing:.5px}
-.selo{font-size:13px;font-weight:700;padding:3px 10px;border-radius:99px}
-.selo.comprar{background:var(--verde-bg);color:var(--verde)} .selo.vender{background:var(--verm-bg);color:var(--verm)} .selo.manter{background:var(--amar-bg);color:var(--amar)}
-.passos{margin:10px 0 6px;padding-left:22px}
-.passos li{margin:4px 0}
-.num{font-weight:700}
-.hist{font-size:14px;color:var(--txt2);margin-top:6px}
-details{margin-top:8px;font-size:14px;color:var(--txt2)}
-details summary{cursor:pointer}
-table{border-collapse:collapse;font-size:13px;margin-top:6px}
-td,th{padding:4px 10px 4px 0;text-align:left}
+html{background:var(--bg)}
+body{margin:0;color:var(--txt);font:17px/1.5 var(--corpo);font-weight:500;min-height:100vh;
+  background:
+    radial-gradient(1200px 600px at 85% -10%,rgba(255,43,214,.16),transparent 60%),
+    radial-gradient(900px 500px at -10% 10%,rgba(0,240,255,.14),transparent 60%),
+    linear-gradient(rgba(0,240,255,.05) 1px,transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg,rgba(0,240,255,.05) 1px,transparent 1px) 0 0/40px 40px,var(--bg)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+::selection{background:var(--rosa);color:#000}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 18px 70px}
+/* ---- cabeçalho */
+.cabecalho{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.marca{display:flex;align-items:center;gap:14px}
+.olho{width:78px;height:52px;filter:drop-shadow(0 0 6px rgba(0,240,255,.7)) drop-shadow(0 0 14px rgba(255,43,214,.45));animation:respira 4s ease-in-out infinite}
+@keyframes respira{50%{filter:drop-shadow(0 0 10px rgba(0,240,255,.95)) drop-shadow(0 0 22px rgba(255,43,214,.7))}}
+h1{position:relative;margin:0;font:900 40px/1 var(--disp);letter-spacing:8px;color:#fff;
+  text-shadow:0 0 8px rgba(0,240,255,.8),0 0 22px rgba(0,240,255,.4)}
+h1::before,h1::after{content:attr(data-txt);position:absolute;inset:0;pointer-events:none}
+h1::before{color:var(--rosa);transform:translate(2px,0);clip-path:inset(0 0 60% 0);opacity:.7;animation:glitch 3.5s infinite steps(1)}
+h1::after{color:var(--ciano);transform:translate(-2px,0);clip-path:inset(55% 0 0 0);opacity:.7;animation:glitch 2.7s infinite steps(1) reverse}
+@keyframes glitch{0%,92%{transform:translate(0,0)}93%{transform:translate(4px,-1px)}95%{transform:translate(-3px,1px)}97%{transform:translate(2px,0)}}
+.tag{font:14px var(--mono);color:var(--rosa);letter-spacing:1px;margin-top:6px}
+.sub{color:var(--txt2);margin:14px 0 0;font-size:16px}
+.pisca{color:var(--ciano);animation:pisca 1s steps(1) infinite}@keyframes pisca{50%{opacity:0}}
+.versao{display:flex;align-items:center;gap:8px;font:13px var(--mono);color:var(--txt2)}
+.ver-rot{letter-spacing:2px}
+h2{font:800 17px/1.2 var(--disp);letter-spacing:3px;text-transform:uppercase;margin:34px 0 6px;color:#fff;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--ciano),transparent)}
+h3{font:800 15px/1.2 var(--disp)!important;letter-spacing:2.5px;text-transform:uppercase;color:#fff}
+/* ---- controles */
+label{display:flex;flex-direction:column;font:12px var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--txt2);gap:6px}
+input,select{font:600 17px var(--corpo)!important;padding:9px 12px;border:1px solid var(--borda);border-radius:0;width:180px;background:rgba(0,0,0,.35);color:var(--txt);outline:none;transition:.15s}
+input:focus,select:focus{border-color:var(--ciano);box-shadow:0 0 0 1px var(--ciano),0 0 16px rgba(0,240,255,.35)}
+input[type=date]{color-scheme:dark}
+button{font:800 13px var(--disp);letter-spacing:2px;text-transform:uppercase;padding:12px 20px;border:0;border-radius:0;cursor:pointer;color:#001014;
+  background:linear-gradient(90deg,var(--ciano),#5df9ff);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  box-shadow:0 0 18px rgba(0,240,255,.35);transition:transform .1s,filter .15s}
+button:hover{filter:brightness(1.15) drop-shadow(0 0 8px rgba(0,240,255,.8))}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.35;filter:grayscale(.6);cursor:wait}
+button.sec{background:transparent;color:var(--ciano);box-shadow:inset 0 0 0 1px var(--ciano)}
+button.sec:hover{background:rgba(0,240,255,.1)}
+button.perigo{background:var(--verm);color:#fff}
+button.mini{padding:7px 12px;font-size:11px}
+.botoes{display:flex;gap:12px;flex-wrap:wrap}
+.topo{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end;background:linear-gradient(135deg,rgba(0,240,255,.07),rgba(255,43,214,.05));border:1px solid var(--borda);padding:18px;margin-top:18px;clip-path:var(--corte);position:relative}
+.status{margin-top:14px;color:var(--txt2);font:14px var(--mono)}
+.status b{color:var(--ciano)}
+.barra{height:6px;background:var(--borda);overflow:hidden;margin-top:8px;max-width:440px}
+.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ciano),var(--rosa));box-shadow:0 0 12px var(--ciano)}
+.infolista{margin-top:10px;font:14px var(--mono);color:var(--txt2)}
+.infolista b{color:var(--txt)}
+.alerta{background:var(--amar-bg);border-left:3px solid var(--amar);color:var(--txt);padding:10px 14px;margin-top:10px;font:600 15px var(--corpo)}
+/* ---- abas */
+.abas{display:flex;gap:4px;margin:24px 0 6px;border-bottom:1px solid var(--borda)}
+.abas button{background:transparent;color:var(--txt2);box-shadow:none;clip-path:none;padding:12px 20px;font-size:13px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.abas button.on{color:var(--ciano);border-bottom-color:var(--ciano);text-shadow:0 0 10px rgba(0,240,255,.7);background:linear-gradient(0deg,rgba(0,240,255,.10),transparent)}
+.abas button:hover{filter:none;color:var(--txt)}
+/* ---- cartões de sinal */
+.dica{font:13px var(--mono);color:var(--txt2);margin:0 0 10px}
+.card{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--borda);padding:18px 20px;margin:12px 0;position:relative;clip-path:var(--corte)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--borda)}
+.card.comprar::before{background:var(--verde);box-shadow:0 0 14px var(--verde)}
+.card.vender::before{background:var(--verm);box-shadow:0 0 14px var(--verm)}
+.card.manter::before{background:var(--amar);box-shadow:0 0 14px var(--amar)}
+.card.comprar{border-color:rgba(57,255,136,.35)} .card.vender{border-color:rgba(255,56,100,.35)} .card.manter{border-color:rgba(255,210,61,.3)}
+.cab{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.pos{font:14px var(--mono);color:var(--rosa)}
+.tk{font:900 28px var(--disp);letter-spacing:3px;color:#fff}
+.selo{font:800 11px var(--disp);letter-spacing:2px;padding:4px 10px;border:1px solid}
+.selo.comprar{color:var(--verde);border-color:var(--verde);box-shadow:0 0 10px rgba(57,255,136,.35)}
+.selo.vender{color:var(--verm);border-color:var(--verm);box-shadow:0 0 10px rgba(255,56,100,.35)}
+.selo.manter{color:var(--amar);border-color:var(--amar)}
+.passos{margin:12px 0 8px;padding-left:24px}
+.passos li{margin:5px 0}
+.passos li::marker{color:var(--ciano);font-family:var(--mono)}
+.num{font-weight:700;color:#fff;font-family:var(--mono)}
+.hist{font:14px var(--mono);color:var(--txt2);margin-top:8px}
+details{margin-top:10px;font-size:15px;color:var(--txt2)}
+details summary{cursor:pointer;color:var(--ciano);font:13px var(--mono)}
+table{border-collapse:collapse;font:14px var(--mono);margin-top:6px}
+td,th{padding:4px 12px 4px 0;text-align:left}
 .verde{color:var(--verde)} .verm{color:var(--verm)}
-.vazio{background:var(--card);border:1px dashed var(--borda);border-radius:14px;padding:14px 18px;color:var(--txt2)}
-.aviso{background:var(--amar-bg);border-radius:12px;padding:14px 16px;margin-top:30px;font-size:14px}
-.glos{font-size:14px;color:var(--txt2)} .glos b{color:var(--txt)}
-.lista{font-size:14px;color:var(--txt2)}
-.cabecalho{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.versao{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--txt2)}
-.chip{background:var(--card);border:1px solid var(--borda);border-radius:99px;padding:3px 10px;font-weight:600;color:var(--txt)}
-.chip.nova{background:var(--verde-bg);color:var(--verde);border-color:transparent}
-button.sec{background:var(--card);color:var(--txt);border:1px solid var(--borda)}
-.botoes{display:flex;gap:10px;flex-wrap:wrap}
-.infolista{margin-top:8px;font-size:14px;color:var(--txt2)}
-.alerta{background:var(--amar-bg);color:var(--txt);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:14px}
-.fundo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:40px 14px;overflow:auto;z-index:10}
+.vazio{border:1px dashed var(--borda);padding:16px 20px;color:var(--txt2);font:15px var(--mono);background:rgba(0,0,0,.25)}
+.aviso{background:var(--amar-bg);border:1px solid rgba(255,210,61,.35);padding:16px 18px;margin-top:34px;font-size:15px;clip-path:var(--corte)}
+.glos{font-size:15px;color:var(--txt2)} .glos b{color:var(--ciano);font-weight:700}
+.lista{font:14px var(--mono);color:var(--txt2)}
+/* ---- chips / painel */
+.chip{background:rgba(0,240,255,.08);border:1px solid var(--ciano);padding:3px 10px;font:14px var(--mono);color:var(--ciano)}
+.chip.nova{background:var(--verde-bg);color:var(--verde);border-color:var(--verde)}
+.fundo{position:fixed;inset:0;background:rgba(2,3,8,.8);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:50px 14px;overflow:auto;z-index:60}
 .fundo.on{display:flex}
-.painel{background:var(--card);border-radius:16px;max-width:560px;width:100%;padding:20px 22px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
-.painel h3{margin:0 0 4px;font-size:20px}
-.painel ul{padding-left:20px;margin:6px 0 12px}
-.painel li{margin:4px 0}
-.passo{background:var(--bg);border-radius:10px;padding:12px 14px;margin:10px 0;font-size:15px}
+.painel{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--ciano);max-width:580px;width:100%;padding:22px 24px;box-shadow:0 0 40px rgba(0,240,255,.25);clip-path:var(--corte)}
+.painel h3{margin:0 0 6px;font-size:18px}
+.painel ul{padding-left:20px;margin:6px 0 12px} .painel li{margin:4px 0}
+.passo{background:rgba(0,0,0,.35);border:1px solid var(--borda);padding:14px 16px;margin:12px 0}
 .ok{color:var(--verde);font-weight:700}
-.abas{display:flex;gap:6px;margin:18px 0 4px;border-bottom:2px solid var(--borda)}
-.abas button{background:transparent;color:var(--txt2);border-radius:10px 10px 0 0;padding:10px 18px;font-size:16px;margin-bottom:-2px;border-bottom:3px solid transparent}
-.abas button.on{color:var(--txt);border-bottom-color:var(--azul)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:14px}
-.kpi{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:14px 16px}
-.kpi .rot{font-size:13px;color:var(--txt2)}
-.kpi .val{font-size:24px;font-weight:800;margin-top:2px}
-.kpi .det{font-size:13px;color:var(--txt2);margin-top:2px}
-.kpi.grande{grid-column:1/-1;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.kpi.grande .val{font-size:34px}
-.medidor{height:10px;background:var(--borda);border-radius:9px;overflow:hidden;margin-top:6px}
-.medidor i{display:block;height:100%;background:var(--verde)}
+/* ---- carteira */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+.kpi{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--borda);padding:16px 18px;clip-path:var(--corte);position:relative}
+.kpi .rot{font:12px var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--txt2)}
+.kpi .val{font:800 25px var(--disp);margin-top:6px;letter-spacing:1px}
+.kpi .det{font-size:14px;color:var(--txt2);margin-top:4px}
+.kpi.grande{grid-column:1/-1;display:flex;align-items:center;gap:28px;flex-wrap:wrap;border-color:rgba(0,240,255,.4);box-shadow:inset 0 0 40px rgba(0,240,255,.06)}
+.kpi.grande .val{font-size:38px}
+.kpi .val.verde{text-shadow:0 0 14px rgba(57,255,136,.55)} .kpi .val.verm{text-shadow:0 0 14px rgba(255,56,100,.55)}
+.medidor{height:8px;background:var(--borda);overflow:hidden;margin-top:8px}
+.medidor i{display:block;height:100%;background:var(--verde);box-shadow:0 0 10px var(--verde)}
 .medidor i.alto{background:var(--amar)} .medidor i.passou{background:var(--verm)}
-.bloco{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:16px 18px;margin-top:14px}
-.bloco h3{margin:0 0 10px;font-size:18px}
-.tab{width:100%;border-collapse:collapse;font-size:14px}
-.tab th,.tab td{padding:8px 8px;border-bottom:1px solid var(--borda);text-align:right;white-space:nowrap}
+.bloco{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--borda);padding:18px 20px;margin-top:16px;clip-path:var(--corte)}
+.bloco h3{margin:0 0 12px}
+.tab{width:100%;border-collapse:collapse;font:14px var(--mono)}
+.tab th,.tab td{padding:9px 8px;border-bottom:1px solid var(--borda);text-align:right;white-space:nowrap}
 .tab th:first-child,.tab td:first-child{text-align:left}
-.tab th{color:var(--txt2);font-weight:600;font-size:13px}
+.tab th{color:var(--ciano);font-weight:400;font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.tab tbody tr:hover{background:rgba(0,240,255,.05)}
+.tab b{color:#fff}
 .rolar{overflow-x:auto}
-.form{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
-.form input,.form select{width:140px}
-.form select{font:inherit;padding:8px 10px;border:1px solid var(--borda);border-radius:8px;background:var(--card);color:var(--txt)}
-.tipo{display:inline-flex;border:1px solid var(--borda);border-radius:9px;overflow:hidden}
-.tipo button{border-radius:0;background:transparent;color:var(--txt)}
-.tipo button.on.compra{background:var(--verde);color:#fff} .tipo button.on.venda{background:var(--verm);color:#fff}
-.msg{margin-top:8px;font-size:14px}
+.form{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end}
+.form input,.form select{width:150px}
+.tipo{display:inline-flex;border:1px solid var(--borda)}
+.tipo button{clip-path:none;background:transparent;color:var(--txt2);box-shadow:none;padding:11px 16px}
+.tipo button.on.compra{background:var(--verde);color:#001a0c;box-shadow:0 0 14px rgba(57,255,136,.5)}
+.tipo button.on.venda{background:var(--verm);color:#fff;box-shadow:0 0 14px rgba(255,56,100,.5)}
+.msg{margin-top:10px;font-size:15px}
 .grafico{position:relative} .grafico canvas{width:100%;display:block}
-.dica-g{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--borda);border-radius:8px;padding:6px 9px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.15);display:none;white-space:nowrap;z-index:5}
-.legenda{display:flex;gap:16px;font-size:13px;color:var(--txt2);margin-bottom:6px;flex-wrap:wrap}
-.legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}
-button.mini{padding:4px 10px;font-size:13px;font-weight:600}
-button.perigo{background:var(--verm)}
-.sinal{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
-.sinal.VENDER{background:var(--verm-bg);color:var(--verm)} .sinal.MANTER{background:var(--amar-bg);color:var(--amar)} .sinal.COMPRAR{background:var(--verde-bg);color:var(--verde)}
+.dica-g{position:absolute;pointer-events:none;background:#060a14;border:1px solid var(--ciano);padding:7px 10px;font:13px var(--mono);box-shadow:0 0 16px rgba(0,240,255,.3);display:none;white-space:nowrap;z-index:5}
+.legenda{display:flex;gap:16px;font:13px var(--mono);color:var(--txt2);margin-bottom:8px;flex-wrap:wrap}
+.legenda i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:6px}
+.sinal{font:800 10px var(--disp);letter-spacing:1.5px;padding:3px 8px;border:1px solid}
+.sinal.VENDER{color:var(--verm);border-color:var(--verm)} .sinal.MANTER{color:var(--amar);border-color:var(--amar)} .sinal.COMPRAR{color:var(--verde);border-color:var(--verde)}
+a{color:var(--ciano)}
+@media (max-width:640px){h1{font-size:30px;letter-spacing:5px}.olho{width:60px;height:40px}.tk{font-size:22px}input{width:100%}label{flex:1 1 100%}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="cabecalho">
-    <h1>🤖 Robô de Ações</h1>
-    <div class="versao">Versão <span class="chip" id="versao">…</span><button class="sec" id="abrirAtualizacao">⬆️ Atualizar o robô</button></div>
+    <div class="marca"><svg class="olho" viewBox="0 0 120 80" aria-label="Olho de Horus" role="img">
+  <defs><linearGradient id="gOlho" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#ff2bd6"/></linearGradient></defs>
+  <g fill="none" stroke="url(#gOlho)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 14 Q52 2 104 12"/>
+    <path d="M10 34 Q40 14 70 18 Q92 21 106 32"/>
+    <path d="M10 34 Q40 50 70 46 Q90 43 106 32"/>
+    <path d="M106 32 L116 32"/>
+    <path d="M40 46 L32 72"/>
+    <path d="M62 47 Q66 60 78 62 Q90 62 90 52 Q89 45 82 46 Q76 48 79 54"/>
+  </g>
+  <circle cx="56" cy="32" r="10" fill="#ff2bd6"/><circle cx="56" cy="32" r="4" fill="#05060a"/><circle cx="60" cy="28" r="2.2" fill="#fff"/>
+</svg><div><h1 data-txt="HORUS">HORUS</h1><div class="tag">// o olho que vê o mercado</div></div></div>
+    <div class="versao"><span class="ver-rot">SYS.VER</span> <span class="chip" id="versao">…</span><button class="sec" id="abrirAtualizacao">⟳ ATUALIZAR</button></div>
   </div>
-  <p class="sub">Sinais para o dia seguinte, com base no fechamento da bolsa. Veja à noite e mande as ordens pela NuInvest de manhã.</p>
+  <p class="sub"><span class="pisca">▮</span> Sinais para o dia seguinte, com base no fechamento da bolsa. Veja à noite e mande as ordens pela sua corretora de manhã.</p>
 
-  <div class="abas"><button data-aba="sinais" class="on">📈 Sinais</button><button data-aba="carteira">💼 Minha carteira</button></div>
+  <div class="abas"><button data-aba="sinais" class="on">◉ Sinais</button><button data-aba="carteira">◈ Minha carteira</button></div>
 
   <section id="aba-sinais">
   <div class="topo">
     <label>Quanto você tem para investir (R$)<input id="capital" type="number" min="0" step="100"></label>
     <label>Quanto aceita perder por operação (%)<input id="risco" type="number" min="0.1" max="5" step="0.1"></label>
     <div class="botoes">
-      <button id="atualizar" title="Recalcula comprar / vender / manter com os preços mais recentes">🔄 Atualizar sinais</button>
-      <button id="atualizarLista" class="sec" title="Escolhe de novo as 30 ações mais negociadas da bolsa">📋 Atualizar lista de ações</button>
+      <button id="atualizar" title="Recalcula comprar / vender / manter com os preços mais recentes">⟳ Atualizar sinais</button>
+      <button id="atualizarLista" class="sec" title="Escolhe de novo as 30 ações mais negociadas da bolsa">≡ Atualizar lista de ações</button>
     </div>
   </div>
   <div class="infolista" id="infolista"></div>
@@ -125,7 +194,7 @@ button.perigo{background:var(--verm)}
     <div class="kpis" id="kpis"></div>
 
     <div class="bloco">
-      <h3>➕ Registrar compra ou venda</h3>
+      <h3>+ Registrar compra ou venda</h3>
       <div class="form">
         <div><div style="font-size:14px;color:var(--txt2);margin-bottom:4px">Tipo</div>
           <div class="tipo"><button class="compra on" data-t="compra">Comprei</button><button class="venda" data-t="venda">Vendi</button></div></div>
@@ -138,36 +207,36 @@ button.perigo{background:var(--verm)}
       </div>
       <datalist id="listaAcoes"></datalist>
       <div class="msg" id="fMsg"></div>
-      <p style="font-size:13px;color:var(--txt2);margin:8px 0 0">Use os valores da nota de corretagem ou do histórico de ordens da NuInvest. Se deixar as taxas em branco, o robô estima a taxa da bolsa (≈0,03% do valor).</p>
+      <p style="font-size:13px;color:var(--txt2);margin:8px 0 0">Use os valores da nota de corretagem ou do histórico de ordens da sua corretora. Se deixar as taxas em branco, o robô estima a taxa da bolsa (≈0,03% do valor).</p>
     </div>
 
     <div class="bloco">
-      <h3>💼 Minha carteira</h3>
+      <h3>◈ Minha carteira</h3>
       <div class="rolar"><table class="tab" id="tabCarteira"></table></div>
       <p style="font-size:13px;color:var(--txt2);margin:8px 0 0" id="obsPrecos"></p>
     </div>
 
     <div class="bloco">
-      <h3>📈 Meu resultado ao longo do tempo</h3>
+      <h3>⌁ Meu resultado ao longo do tempo</h3>
       <div class="legenda"><span><i style="background:var(--azul);height:3px;vertical-align:3px"></i>Lucro ou prejuízo acumulado das vendas (já descontando imposto)</span></div>
       <div class="grafico"><canvas id="gLinha" height="240"></canvas><div class="dica-g" id="dLinha"></div></div>
-      <h3 style="margin-top:20px">📅 Resultado de cada mês</h3>
+      <h3 style="margin-top:20px">▦ Resultado de cada mês</h3>
       <div class="legenda"><span><i style="background:var(--verde)"></i>Mês com lucro</span><span><i style="background:var(--verm)"></i>Mês com prejuízo</span></div>
       <div class="grafico"><canvas id="gBarras" height="220"></canvas><div class="dica-g" id="dBarras"></div></div>
     </div>
 
     <div class="bloco">
-      <h3>🧾 Imposto de renda por mês (estimativa)</h3>
+      <h3>§ Imposto de renda por mês (estimativa)</h3>
       <div class="rolar"><table class="tab" id="tabImposto"></table></div>
       <p style="font-size:13px;color:var(--txt2);margin:8px 0 0">Regra: em operações comuns (comprou num dia, vendeu em outro), é isento se você vendeu até R$ 20 mil em ações no mês. Acima disso, paga 15% do lucro. Day trade (comprou e vendeu no mesmo dia) paga 20%, sem isenção. Prejuízo de meses anteriores é descontado. Paga-se por DARF, código 6015, até o último dia útil do mês seguinte. É uma estimativa: confira com um contador.</p>
     </div>
 
     <div class="bloco">
-      <h3>📜 Todas as minhas operações</h3>
+      <h3>☰ Todas as minhas operações</h3>
       <div class="rolar"><table class="tab" id="tabOps"></table></div>
       <div class="botoes" style="margin-top:12px">
-        <a href="/api/operacoes/exportar"><button class="sec">💾 Salvar cópia das operações</button></a>
-        <label style="display:inline-block"><span class="chip" style="cursor:pointer;display:inline-block;padding:8px 14px;border-radius:9px">📂 Carregar cópia</span><input type="file" id="importar" accept=".json" hidden></label>
+        <a href="/api/operacoes/exportar"><button class="sec">⇩ Salvar cópia das operações</button></a>
+        <label style="display:inline-block"><span class="chip" style="cursor:pointer;display:inline-block;padding:8px 14px;border-radius:9px">⇧ Carregar cópia</span><input type="file" id="importar" accept=".json" hidden></label>
       </div>
       <p style="font-size:12px;color:var(--txt2);margin:6px 0 0">* taxa estimada pelo robô (você não informou).</p>
       <div class="msg" id="impMsg"></div>
@@ -175,21 +244,21 @@ button.perigo{background:var(--verm)}
     </div>
   </section>
 
-  <h2>📖 Palavras que aparecem aqui</h2>
+  <h2><span style="color:var(--rosa)">?</span> Palavras que aparecem aqui</h2>
   <div class="glos">
     <p><b>Abertura:</b> o começo do pregão, às 10h. É quando você deve mandar as ordens.</p>
-    <p><b>Preço de proteção (stop):</b> se a ação cair até esse preço, venda. Isso limita a sua perda. Se o app da NuInvest permitir, cadastre uma ordem "stop" nesse preço logo depois de comprar. Se não, o robô avisa no dia seguinte.</p>
+    <p><b>Preço de proteção (stop):</b> se a ação cair até esse preço, venda. Isso limita a sua perda. Se o app da sua corretora permitir, cadastre uma ordem "stop" nesse preço logo depois de comprar. Se não, o robô avisa no dia seguinte.</p>
     <p><b>Preço máximo:</b> não pague mais que isso. Se a ação abrir bem acima, deixe passar. Outra oportunidade aparece.</p>
-    <p><b>Menos de 100 ações:</b> na NuInvest, use o código com F no final (exemplo: ITUB4F). É o mercado fracionário.</p>
+    <p><b>Menos de 100 ações:</b> na maioria das corretoras, use o código com F no final (exemplo: ITUB4F). É o mercado fracionário.</p>
     <p><b>Acertou X de Y vezes:</b> quantas vezes a regra deu lucro no período de teste (os dados mais recentes, que o robô não usou para escolher a regra).</p>
   </div>
 
-  <div class="aviso">⚠️ <b>Leia antes de usar.</b> O robô segue regras que funcionaram no passado. Isso <b>não garante</b> lucro no futuro, e vai ter semanas de perda. Use só dinheiro que você pode perder, respeite sempre o preço de proteção e comece com pouco. Os preços vêm de fontes gratuitas, com atraso, e podem ter erros: confira o preço no app da corretora antes de mandar a ordem. Isto não é recomendação de investimento.</div>
+  <div class="aviso"><b style="color:var(--amar)">⚠ LEIA ANTES DE USAR.</b> O Horus segue regras que funcionaram no passado. Isso <b>não garante</b> lucro no futuro, e vai ter semanas de perda. Use só dinheiro que você pode perder, respeite sempre o preço de proteção e comece com pouco. Os preços vêm de fontes gratuitas, com atraso, e podem ter erros: confira o preço no app da corretora antes de mandar a ordem. Isto não é recomendação de investimento.</div>
 </div>
 
 <div class="fundo" id="fundo">
   <div class="painel">
-    <h3>⬆️ Atualizar o robô</h3>
+    <h3>Atualizar o Horus</h3>
     <p style="margin:0;color:var(--txt2)">Você está usando a versão <b id="pvAtual"></b>.</p>
     <div id="remoto"></div>
     <div class="passo">
@@ -198,7 +267,7 @@ button.perigo{background:var(--verm)}
         <li>Baixe o arquivo <b>robo-acoes.zip</b> novo que o Claude te mandou.</li>
         <li>Clique no botão abaixo e escolha esse arquivo (geralmente está em <b>Downloads</b>).</li>
       </ol>
-      <label style="display:inline-block"><span class="chip" style="cursor:pointer;color:var(--azul)">📦 Escolher arquivo .zip</span><input type="file" id="zip" accept=".zip" hidden></label>
+      <label style="display:inline-block"><span class="chip" style="cursor:pointer;color:var(--azul)">⇧ Escolher arquivo .zip</span><input type="file" id="zip" accept=".zip" hidden></label>
       <div id="msgZip" style="margin-top:10px"></div>
       <div class="small" style="font-size:13px;color:var(--txt2);margin-top:6px">Sua lista de ações e o valor que você investe não são apagados. Uma cópia da versão atual fica guardada, por segurança.</div>
     </div>
@@ -230,13 +299,13 @@ function cardComprar(it,i){
     <li>Depois, é só esperar. O robô avisa quando for hora de vender.</li>
   </ol>
   <div class="hist">Fechou hoje em ${R(it.preco)} · ${hist(it.historico)}</div>${detalhes(it)}
-  <button class="mini sec" style="margin-top:10px" onclick="preencher('compra','${it.acao}',${it.qtd||''},'')">✍️ Comprei — registrar na carteira</button></div>`;
+  <button class="mini sec" style="margin-top:10px" onclick="preencher('compra','${it.acao}',${it.qtd||''},'')">✓ Comprei — registrar</button></div>`;
 }
 function cardVender(it){
   return `<div class="card vender"><div class="cab"><span class="tk">${it.acao}</span><span class="selo vender">VENDER</span></div>
   <p style="margin:8px 0">${it.motivo}${it.resultado_pct!=null?` Resultado aproximado desde a compra: <b class="${it.resultado_pct>=0?'verde':'verm'}">${P(it.resultado_pct)}</b>.`:''}</p>
   <div class="hist">Só vale se você comprou essa ação seguindo o robô. Fechou hoje em ${R(it.preco)}.</div>${detalhes(it)}
-  <button class="mini sec" style="margin-top:10px" onclick="preencher('venda','${it.acao}','','')">✍️ Vendi — registrar na carteira</button></div>`;
+  <button class="mini sec" style="margin-top:10px" onclick="preencher('venda','${it.acao}','','')">✓ Vendi — registrar</button></div>`;
 }
 function cardManter(it){
   return `<div class="card manter"><div class="cab"><span class="tk">${it.acao}</span><span class="selo manter">MANTER</span></div>
@@ -246,13 +315,13 @@ function render(res){window.ULTIMO_RES=res;
   const k=JSON.stringify(res);if(k===ultimoRender)return;ultimoRender=k;
   if(!preenchido&&res.config){$('#capital').value=res.config.capital;$('#risco').value=res.config.risco_pct;preenchido=true;}
   const c=res.itens.filter(x=>x.sinal==='COMPRAR'),v=res.itens.filter(x=>x.sinal==='VENDER'),m=res.itens.filter(x=>x.sinal==='MANTER'),a=res.itens.filter(x=>x.sinal==='AGUARDAR');
-  let h=`<h2>🟢 Comprar amanhã</h2><p class="dica">Em ordem: a 1ª é a que teve o melhor resultado no teste.</p>`;
+  let h=`<h2><span class="verde">▲</span> Comprar amanhã</h2><p class="dica">Em ordem: a 1ª é a que teve o melhor resultado no teste.</p>`;
   h+=c.length?c.map(cardComprar).join(''):`<div class="vazio">Nenhuma compra para amanhã. Tudo bem: ficar de fora também é uma decisão. Volte amanhã à noite.</div>`;
-  h+=`<h2>🔴 Vender amanhã</h2><p class="dica">Só se você tem essas ações.</p>`;
+  h+=`<h2><span class="verm">▼</span> Vender amanhã</h2><p class="dica">Só se você tem essas ações.</p>`;
   h+=v.length?v.map(cardVender).join(''):`<div class="vazio">Nenhuma venda para amanhã.</div>`;
-  h+=`<h2>🟡 Manter</h2><p class="dica">Se você comprou essas ações seguindo o robô, continue com elas.</p>`;
+  h+=`<h2><span style="color:var(--amar)">◆</span> Manter</h2><p class="dica">Se você comprou essas ações seguindo o robô, continue com elas.</p>`;
   h+=m.length?m.map(cardManter).join(''):`<div class="vazio">Nenhuma ação para manter agora.</div>`;
-  h+=`<h2>⚪ Sem sinal hoje</h2><p class="lista">${a.length?'Ações com regra aprovada, mas sem nada a fazer amanhã: '+a.map(x=>x.acao).join(', ')+'.':'—'}</p>`;
+  h+=`<h2><span style="color:var(--txt2)">○</span> Sem sinal hoje</h2><p class="lista">${a.length?'Ações com regra aprovada, mas sem nada a fazer amanhã: '+a.map(x=>x.acao).join(', ')+'.':'—'}</p>`;
   if(res.sem_estrategia.length)h+=`<p class="lista">Ações em que nenhuma regra passou no teste (o robô não opera): ${res.sem_estrategia.join(', ')}.</p>`;
   if(res.falhas.length)h+=`<p class="lista">Não consegui baixar: ${res.falhas.map(f=>`<span title="${f.erro.replace(/"/g,'')}">${f.acao}</span>`).join(', ')}. Confira o código em acoes.txt ou tente mais tarde.</p>`;
   $('#conteudo').innerHTML=h;
@@ -264,9 +333,9 @@ function novidadesHTML(v){
   return h;
 }
 function infoLista(l){
-  let h=l.data?`📋 Lista com <b>${l.qtd} ações</b>, montada em ${dataBR(l.data)}${l.dias!=null?` (há ${l.dias} ${l.dias===1?'dia':'dias'})`:''}.`
-              :`📋 Usando a lista inicial de ${l.qtd} ações.`;
-  if(l.velha)h+=`<div class="alerta">${l.data?'Sua lista de ações tem mais de 30 dias.':'A lista ainda não foi atualizada.'} Clique em <b>📋 Atualizar lista de ações</b> para pegar as mais negociadas de agora (leva uns 3 minutos).</div>`;
+  let h=l.data?`≡ Lista com <b>${l.qtd} ações</b>, montada em ${dataBR(l.data)}${l.dias!=null?` (há ${l.dias} ${l.dias===1?'dia':'dias'})`:''}.`
+              :`≡ Usando a lista inicial de ${l.qtd} ações.`;
+  if(l.velha)h+=`<div class="alerta">${l.data?'Sua lista de ações tem mais de 30 dias.':'A lista ainda não foi atualizada.'} Clique em <b>≡ Atualizar lista de ações</b> para pegar as mais negociadas de agora (leva uns 3 minutos).</div>`;
   $('#infolista').innerHTML=h;
 }
 async function tick(){
@@ -285,8 +354,8 @@ async function tick(){
     if(e.resultado)render(e.resultado);
     setTimeout(tick,e.status==='rodando'?1500:15000);
   }catch(err){
-    if(aguardandoReinicio){$('#status').textContent='Reiniciando o robô com a versão nova…';setTimeout(tick,1000);return;}
-    $('#status').innerHTML='<span class="verm">O robô está fechado. Abra de novo pelo atalho "Robô de Ações".</span>';setTimeout(tick,5000);}
+    if(aguardandoReinicio){$('#status').textContent='Reiniciando o Horus com a versão nova…';setTimeout(tick,1000);return;}
+    $('#status').innerHTML='<span class="verm">O Horus está fechado. Abra de novo pelo atalho "Horus".</span>';setTimeout(tick,5000);}
 }
 $('#atualizar').onclick=async()=>{ultimoRender='';
   await fetch('/api/atualizar',{method:'POST',body:JSON.stringify({capital:+$('#capital').value||0,risco_pct:+$('#risco').value||1})});setTimeout(tick,300);};
@@ -306,7 +375,7 @@ async function instalar(url,corpo){
   $('#msgZip').textContent='Instalando…';
   try{const r=await (await fetch(url,{method:'POST',body:corpo})).json();
     if(!r.ok){$('#msgZip').innerHTML=`<span class="verm">${r.erro}</span>`;return;}
-    $('#msgZip').innerHTML=`<p class="ok">✓ Versão ${r.versao} instalada! O robô vai reiniciar sozinho em alguns segundos.</p><b>O que mudou:</b><ul>${r.novidades.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    $('#msgZip').innerHTML=`<p class="ok">✓ Versão ${r.versao} instalada! O Horus vai reiniciar sozinho em alguns segundos.</p><b>O que mudou:</b><ul>${r.novidades.map(x=>`<li>${x}</li>`).join('')}</ul>`;
     aguardandoReinicio=r.versao;setTimeout(tick,2500);
   }catch(e){$('#msgZip').innerHTML='<span class="verm">Não consegui instalar. Tente de novo.</span>';}
 }
@@ -352,7 +421,7 @@ async function carregarCarteira(){
 function desenharCarteira(){
   const r=CART.resumo,M=Math.min(r.vendas_mes/20000,1.2);
   const vazio=!CART.operacoes.length;
-  $('#kpis').innerHTML=vazio?`<div class="kpi grande"><div><div class="rot">Comece por aqui</div><div style="font-size:16px;margin-top:4px">Registre abaixo a primeira compra que você fez na NuInvest. A partir daí, o robô mostra se você está ganhando ou perdendo.</div></div></div>`:`
+  $('#kpis').innerHTML=vazio?`<div class="kpi grande"><div><div class="rot">Comece por aqui</div><div style="font-size:16px;margin-top:4px">Registre abaixo a primeira compra que você fez na sua corretora. A partir daí, o robô mostra se você está ganhando ou perdendo.</div></div></div>`:`
    <div class="kpi grande"><div><div class="rot">Resultado total (vendas + carteira − impostos)</div><div class="val ${cl(r.total)}">${r.total>=0?'▲ ':'▼ '}${sinalR(r.total)}</div></div>
      <div class="det" style="font-size:15px">${r.total>=0?'Você está <b class="verde">ganhando</b>.':'Você está <b class="verm">perdendo</b>.'}<br>Dinheiro aplicado agora: ${R(r.investido)} · vale hoje ${R(r.valor_atual)}</div></div>
    <div class="kpi"><div class="rot">Já realizado (ações vendidas)</div><div class="val ${cl(r.realizado)}">${sinalR(r.realizado)}</div><div class="det">${r.impostos>0?'imposto estimado: '+R(r.impostos):'sem imposto até agora'}</div></div>
@@ -388,14 +457,14 @@ const P2=x=>(x>0?'+':'')+Number(x).toLocaleString('pt-BR',{minimumFractionDigits
 
 function prepCanvas(cv){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1,h=+cv.getAttribute('height');cv.width=r.width*dpr;cv.height=h*dpr;cv.style.height=h+'px';const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return {g,w:r.width,h};}
 function escala(lo,hi,n){const sp=hi-lo||1,s0=sp/n,mag=Math.pow(10,Math.floor(Math.log10(s0))),e=s0/mag,st=(e>=7.5?10:e>=3.5?5:e>=1.5?2:1)*mag,o=[];for(let v=Math.ceil(lo/st)*st;v<=hi+1e-9;v+=st)o.push(v);return o;}
-function eixos(g,w,h,L,R,T,B,lo,hi){const Y=v=>T+(hi-v)/(hi-lo)*(h-T-B);g.font='12px system-ui';g.textAlign='right';g.textBaseline='middle';
+function eixos(g,w,h,L,R,T,B,lo,hi){const Y=v=>T+(hi-v)/(hi-lo)*(h-T-B);g.font='13px "Share Tech Mono",monospace';g.textAlign='right';g.textBaseline='middle';
   for(const v of escala(lo,hi,4)){const y=Math.round(Y(v))+.5;g.strokeStyle=cor('--borda');g.lineWidth=1;g.beginPath();g.moveTo(L,y);g.lineTo(w-R,y);g.stroke();g.fillStyle=cor('--txt2');g.fillText(R0(v),L-6,y);}
   const y0=Math.round(Y(0))+.5;g.strokeStyle=cor('--txt2');g.beginPath();g.moveTo(L,y0);g.lineTo(w-R,y0);g.stroke();return Y;}
 const R0=v=>'R$ '+(Math.round(v)||0).toLocaleString('pt-BR');
 let LIN=null,BAR=null;
 function desenharLinha(hover){
   const cv=$('#gLinha'),{g,w,h}=prepCanvas(cv),S=CART.serie;g.clearRect(0,0,w,h);
-  if(!S.length){g.fillStyle=cor('--txt2');g.font='14px system-ui';g.textAlign='center';g.fillText('O gráfico aparece depois da sua primeira venda.',w/2,h/2);LIN=null;return;}
+  if(!S.length){g.fillStyle=cor('--txt2');g.font='14px "Share Tech Mono",monospace';g.textAlign='center';g.fillText('O gráfico aparece depois da sua primeira venda.',w/2,h/2);LIN=null;return;}
   const ops=CART.operacoes,ini=ops.length?ops[ops.length-1].data:S[0].data;const pts=[{data:ini,valor:0,ini:true},...S];
   let lo=Math.min(0,...pts.map(p=>p.valor)),hi=Math.max(0,...pts.map(p=>p.valor));const pad=(hi-lo)*.12||10;lo-=pad;hi+=pad;
   const L=78,Rm=14,T=12,B=28,pw=w-L-Rm;const X=i=>L+(pts.length===1?pw/2:i/(pts.length-1)*pw);
@@ -404,7 +473,7 @@ function desenharLinha(hover){
   g.globalAlpha=.10;g.fillStyle=cor('--verde');g.fillRect(L,T,pw,Y(0)-T);g.fillStyle=cor('--verm');g.fillRect(L,Y(0),pw,h-B-Y(0));g.globalAlpha=1;
   g.strokeStyle=cor('--azul');g.lineWidth=2.5;g.lineJoin='round';g.beginPath();pts.forEach((p,i)=>i?g.lineTo(X(i),Y(p.valor)):g.moveTo(X(i),Y(p.valor)));g.stroke();
   pts.forEach((p,i)=>{if(p.ini)return;g.fillStyle=p.lucro>=0?cor('--verde'):cor('--verm');g.strokeStyle=cor('--card');g.lineWidth=2;g.beginPath();g.arc(X(i),Y(p.valor),hover===i?6:4.5,0,7);g.fill();g.stroke();});
-  g.fillStyle=cor('--txt2');g.textAlign='center';g.textBaseline='top';g.font='12px system-ui';
+  g.fillStyle=cor('--txt2');g.textAlign='center';g.textBaseline='top';g.font='13px "Share Tech Mono",monospace';
   const passo=Math.max(1,Math.ceil(pts.length/6));pts.forEach((p,i)=>{if(i%passo===0||i===pts.length-1)g.fillText(dataBR(p.data).slice(0,5),Math.min(Math.max(X(i),L+16),w-Rm-16),h-B+8);});
   LIN={pts,X,Y,w};
 }
@@ -415,14 +484,14 @@ $('#gLinha').addEventListener('mousemove',e=>{if(!LIN)return;const r=e.target.ge
 $('#gLinha').addEventListener('mouseleave',()=>{$('#dLinha').style.display='none';LIN&&desenharLinha();});
 function desenharBarras(hover){
   const cv=$('#gBarras'),{g,w,h}=prepCanvas(cv),Ms=[...CART.meses].reverse();g.clearRect(0,0,w,h);
-  if(!Ms.length){g.fillStyle=cor('--txt2');g.font='14px system-ui';g.textAlign='center';g.fillText('Sem vendas ainda.',w/2,h/2);BAR=null;return;}
+  if(!Ms.length){g.fillStyle=cor('--txt2');g.font='14px "Share Tech Mono",monospace';g.textAlign='center';g.fillText('Sem vendas ainda.',w/2,h/2);BAR=null;return;}
   const vals=Ms.map(m=>m.lucro_total-m.imposto);
   let lo=Math.min(0,...vals),hi=Math.max(0,...vals);const pad=(hi-lo)*.12||10;lo-=pad;hi+=pad;
   const L=78,Rm=14,T=12,B=28,pw=w-L-Rm,bw=Math.min(56,pw/Ms.length*.6),X=i=>L+(i+.5)*pw/Ms.length;
   const Y=eixos(g,w,h,L,Rm,T,B,lo,hi);
   vals.forEach((v,i)=>{const x=X(i)-bw/2,y0=Y(0),y1=Y(v);g.fillStyle=v>=0?cor('--verde'):cor('--verm');g.globalAlpha=hover==null||hover===i?1:.55;
     const top=Math.min(y0,y1),ht=Math.max(2,Math.abs(y1-y0));g.beginPath();if(g.roundRect)g.roundRect(x,top,bw,ht,v>=0?[4,4,0,0]:[0,0,4,4]);else g.rect(x,top,bw,ht);g.fill();g.globalAlpha=1;
-    g.fillStyle=cor('--txt2');g.textAlign='center';g.textBaseline='top';g.font='12px system-ui';
+    g.fillStyle=cor('--txt2');g.textAlign='center';g.textBaseline='top';g.font='13px "Share Tech Mono",monospace';
     const nomes=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];g.fillText(nomes[+Ms[i].mes.slice(5)-1]+'/'+Ms[i].mes.slice(2,4),X(i),h-B+8);});
   BAR={Ms,vals,X,Y,w,n:Ms.length,L,pw};
 }

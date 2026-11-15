@@ -1,4 +1,4 @@
-# 🤖 Robô de Ações
+# 𓂀 HORUS — o olho que vê o mercado
 
 Programa para Ubuntu (Linux) que, todo dia depois do fechamento da bolsa, mostra em português simples:
 
@@ -7,7 +7,7 @@ Programa para Ubuntu (Linux) que, todo dia depois do fechamento da bolsa, mostra
 - 🟡 quais **manter**
 - 💼 **Minha carteira**: suas compras e vendas, gráficos de ganho/perda e imposto de renda estimado
 
-Você manda as ordens à mão pelo app da sua corretora (ex.: NuInvest).
+Você manda as ordens à mão pelo app da sua corretora (qualquer corretora).
 
 ## Instalar (ou atualizar) num computador com Ubuntu
 
@@ -18,7 +18,7 @@ Você manda as ordens à mão pelo app da sua corretora (ex.: NuInvest).
 wget -qO- https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.sh | bash
 ```
 
-Pronto: o robô abre no navegador. Nas próximas vezes, procure **"Robô de Ações"** no menu de aplicativos.
+Pronto: o robô abre no navegador. Nas próximas vezes, procure **"Horus"** no menu de aplicativos.
 
 > Suas operações e configurações ficam só no computador onde você usa (não vão para o GitHub).
 > Para levar para outro computador: aba **Minha carteira** → **Salvar cópia das operações**, e lá → **Carregar cópia**.

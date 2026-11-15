@@ -1,5 +1,5 @@
-ROBÔ DE AÇÕES — COMO USAR
-=========================
+HORUS — COMO USAR
+=================
 
 INSTALAR (só uma vez)
 1. Descompacte esta pasta num lugar fixo, por exemplo na sua pasta pessoal.
@@ -10,7 +10,7 @@ INSTALAR (só uma vez)
 4. O navegador abre sozinho com o robô. Pronto.
 
 USAR (todo dia útil)
-1. Depois das 18h30 (quando a bolsa já fechou), abra "Robô de Ações"
+1. Depois das 18h30 (quando a bolsa já fechou), abra "Horus"
    pelo menu de aplicativos.
 2. Espere 1 a 3 minutos enquanto ele analisa as ações.
 3. Leia as três listas:
@@ -18,7 +18,7 @@ USAR (todo dia útil)
      de proteção.
    - VENDER: o que vender amanhã (só se você tem).
    - MANTER: o que continuar segurando.
-4. No dia seguinte, a partir das 10h, mande as ordens pelo app da NuInvest.
+4. No dia seguinte, a partir das 10h, mande as ordens pelo app da sua corretora.
    Antes de enviar, confira o preço no app.
 
 OS BOTÕES

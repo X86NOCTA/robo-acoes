@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================
-#  Instala (ou atualiza) o Robô de Ações no Ubuntu.
+#  Instala (ou atualiza) o HORUS no Ubuntu.
 #
 #  Jeito mais fácil (baixa tudo do GitHub sozinho):
 #    wget -qO- https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.sh | bash
@@ -14,7 +14,7 @@ DESTINO="$HOME/robo-acoes"
 ORIGEM="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 
 echo ""
-echo "🤖 Instalando o Robô de Ações…"
+echo "𓂀  Instalando o HORUS…"
 
 # 1) Python 3 (já vem no Ubuntu; se faltar, instala)
 if ! command -v python3 >/dev/null 2>&1; then
@@ -60,8 +60,8 @@ ATALHO="$HOME/.local/share/applications/robo-acoes.desktop"
 cat > "$ATALHO" <<DESK
 [Desktop Entry]
 Type=Application
-Name=Robô de Ações
-Comment=Sinais diários de compra e venda e minha carteira
+Name=Horus
+Comment=Horus — o olho que vê o mercado
 Exec=bash -c 'python3 "$PASTA/robo.py" >> "$HOME/.robo-acoes/log.txt" 2>&1'
 Icon=utilities-system-monitor
 Terminal=false
@@ -81,7 +81,7 @@ sleep 1
 nohup python3 "$PASTA/robo.py" >> "$HOME/.robo-acoes/log.txt" 2>&1 &
 
 echo ""
-echo "✅ Pronto! O robô vai abrir no navegador em alguns segundos."
-echo "   Nas próximas vezes, procure \"Robô de Ações\" no menu de aplicativos"
-echo "   (aperte a tecla Windows/Super e digite: robô)."
+echo "✅ Pronto! O Horus vai abrir no navegador em alguns segundos."
+echo "   Nas próximas vezes, procure \"Horus\" no menu de aplicativos"
+echo "   (aperte a tecla Windows/Super e digite: horus)."
 echo ""
