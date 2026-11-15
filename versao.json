@@ -1,17 +1,26 @@
 {
-  "versao": "1.2.0",
+  "versao": "1.2.1",
   "data": "2026-11-15",
   "novidades": [
-    "Nova aba \"Minha carteira\": registre o que você comprou e vendeu, e veja se está ganhando ou perdendo.",
-    "Indicadores: resultado total, lucro já realizado, resultado em aberto, taxa de acerto, ganho médio × perda média.",
-    "Gráficos: resultado acumulado ao longo do tempo e resultado de cada mês.",
-    "Carteira com preço médio, preço atual, quanto vale hoje e o que o robô diz (manter ou vender).",
-    "Imposto de renda estimado por mês: isenção de R$ 20 mil, 15% (comum), 20% (day trade) e desconto de prejuízos.",
-    "Botões \"Comprei / Vendi — registrar na carteira\" nos sinais, para registrar com um clique.",
-    "Salvar e carregar cópia das operações, para usar em outro computador.",
-    "Preparado para o GitHub: o botão \"Atualizar o robô\" pode buscar versões novas sozinho."
+    "Correção: download das cotações mais resistente a bloqueios do Yahoo Finance (usa cookie como um navegador, vai mais devagar e tenta de novo).",
+    "Quando não consegue baixar, agora mostra o motivo exato do erro.",
+    "Novo teste de conexão: no Terminal, rode  python3 ~/robo-acoes/robo.py --diagnostico"
   ],
   "historico": [
+    {
+      "versao": "1.2.0",
+      "data": "2026-11-15",
+      "novidades": [
+        "Nova aba \"Minha carteira\": registre o que você comprou e vendeu, e veja se está ganhando ou perdendo.",
+        "Indicadores: resultado total, lucro já realizado, resultado em aberto, taxa de acerto, ganho médio × perda média.",
+        "Gráficos: resultado acumulado ao longo do tempo e resultado de cada mês.",
+        "Carteira com preço médio, preço atual, quanto vale hoje e o que o robô diz (manter ou vender).",
+        "Imposto de renda estimado por mês: isenção de R$ 20 mil, 15% (comum), 20% (day trade) e desconto de prejuízos.",
+        "Botões \"Comprei / Vendi — registrar na carteira\" nos sinais, para registrar com um clique.",
+        "Salvar e carregar cópia das operações, para usar em outro computador.",
+        "Preparado para o GitHub: o botão \"Atualizar o robô\" pode buscar versões novas sozinho."
+      ]
+    },
     {
       "versao": "1.1.0",
       "data": "2026-11-14",

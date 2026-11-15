@@ -22,7 +22,7 @@ PASTA = os.path.dirname(os.path.abspath(__file__))
 DADOS = os.path.join(os.path.expanduser("~"), ".robo-acoes")
 os.makedirs(os.path.join(DADOS, "cache"), exist_ok=True)
 PORTA = 8765
-VERSAO = "1.2.0"
+VERSAO = "1.2.1"
 QTD_LISTA = 30            # quantas ações entram na lista quando você clica em "Atualizar lista"
 DIAS_LISTA_VELHA = 30     # depois disso o robô avisa que a lista está velha
 ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "README.md"}
@@ -124,9 +124,72 @@ def _get_json(url, headers=None, timeout=20):
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
 
+# --- Yahoo Finance: usa cookie + "crumb" como um navegador, vai devagar e tenta de novo se for bloqueado
+import http.cookiejar, urllib.error
+_YJAR = http.cookiejar.CookieJar()
+_YOPEN = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(_YJAR))
+_YLOCK = threading.Lock()
+_Y = {"crumb": None, "ultimo": 0.0}
+UA_NAV = {**UA, "Accept": "application/json,text/plain,*/*", "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+          "Referer": "https://finance.yahoo.com/"}
+
+def _yahoo_abrir(url, timeout=20):
+    with _YLOCK:                               # no máximo ~3 pedidos por segundo
+        espera = 0.35 - (time.time() - _Y["ultimo"])
+        if espera > 0:
+            time.sleep(espera)
+        _Y["ultimo"] = time.time()
+    req = urllib.request.Request(url, headers=UA_NAV)
+    with _YOPEN.open(req, timeout=timeout) as r:
+        return r.read()
+
+def _yahoo_crumb(forcar=False):
+    if _Y["crumb"] and not forcar:
+        return _Y["crumb"]
+    for u in ("https://fc.yahoo.com", "https://finance.yahoo.com/"):
+        try:
+            _yahoo_abrir(u)
+        except Exception:
+            pass                                # fc.yahoo.com responde 404, mas deixa o cookie
+    for host in ("query1", "query2"):
+        try:
+            c = _yahoo_abrir(f"https://{host}.finance.yahoo.com/v1/test/getcrumb").decode().strip()
+            if c and "<" not in c and len(c) < 50:
+                _Y["crumb"] = c
+                return c
+        except Exception:
+            pass
+    return None
+
+def _yahoo_json(caminho):
+    """Tenta query1 e query2, com e sem crumb, e espera um pouco se o Yahoo pedir calma (erro 429)."""
+    ultimo_erro = None
+    for tentativa in range(4):
+        for host in ("query1", "query2"):
+            url = f"https://{host}.finance.yahoo.com{caminho}"
+            if _Y["crumb"]:
+                url += "&crumb=" + urllib.parse.quote(_Y["crumb"])
+            try:
+                return json.loads(_yahoo_abrir(url).decode("utf-8"))
+            except urllib.error.HTTPError as e:
+                ultimo_erro = e
+                if e.code == 404:
+                    raise RuntimeError("código não encontrado no Yahoo")
+                if e.code in (401, 403):
+                    _yahoo_crumb(forcar=True)
+                elif e.code == 429:
+                    time.sleep(2 * (tentativa + 1))
+            except Exception as e:
+                ultimo_erro = e
+        time.sleep(1 + tentativa)
+    if isinstance(ultimo_erro, urllib.error.HTTPError):
+        raise RuntimeError(f"Yahoo recusou (erro {ultimo_erro.code})")
+    raise RuntimeError(f"sem conexão com o Yahoo ({ultimo_erro})")
+
 def baixar_yahoo(ticker):
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(ticker)}.SA?range=5y&interval=1d&events=split"
-    j = _get_json(url)
+    j = _yahoo_json(f"/v8/finance/chart/{urllib.parse.quote(ticker)}.SA?range=5y&interval=1d&events=split")
+    if not j.get("chart", {}).get("result"):
+        raise RuntimeError("código não encontrado no Yahoo")
     res = j["chart"]["result"][0]
     ts = res.get("timestamp") or []
     q = res["indicators"]["quote"][0]
@@ -140,6 +203,27 @@ def baixar_yahoo(ticker):
         d = datetime.fromtimestamp(t, SP).strftime("%Y-%m-%d")
         barras.append({"d": d, "o": o * f, "h": h * f, "l": l * f, "c": c * f, "v": v or 0})
     return barras
+
+def diagnostico():
+    """python3 robo.py --diagnostico  → testa a conexão com as fontes de cotação."""
+    print(f"Robô de Ações {VERSAO} — teste de conexão\n")
+    def teste(nome, fn):
+        t = time.time()
+        try:
+            r = fn()
+            print(f"  OK   {nome}  ({time.time()-t:.1f}s) {r}")
+        except urllib.error.HTTPError as e:
+            print(f"  ERRO {nome}: HTTP {e.code} {e.reason}")
+        except Exception as e:
+            print(f"  ERRO {nome}: {e}")
+    teste("internet (google.com)", lambda: _yahoo_abrir("https://www.google.com", 10) and "")
+    teste("Yahoo direto, sem cookie", lambda: len(json.loads(urllib.request.urlopen(urllib.request.Request(
+        "https://query1.finance.yahoo.com/v8/finance/chart/PETR4.SA?range=5d&interval=1d", headers=UA), timeout=20).read())["chart"]["result"][0]["timestamp"]) and "")
+    teste("Yahoo cookie/crumb", lambda: "crumb obtido" if _yahoo_crumb(True) else "sem crumb (pode funcionar mesmo assim)")
+    teste("Yahoo PETR4 (5 anos)", lambda: f"{len(baixar_yahoo('PETR4'))} dias de histórico")
+    teste("Yahoo VALE3 (5 anos)", lambda: f"{len(baixar_yahoo('VALE3'))} dias de histórico")
+    teste("brapi PETR4", lambda: f"{len(baixar_brapi('PETR4', ler_config().get('brapi_token','')))} dias")
+    print("\nCopie tudo acima e mande para o Claude se algo deu ERRO.")
 
 def baixar_brapi(ticker, token):
     url = f"https://brapi.dev/api/quote/{urllib.parse.quote(ticker)}?range=5y&interval=1d"
@@ -669,13 +753,16 @@ def sem_negociacao_recente(barras):
 
 def montar_lista(cfg):
     """Escolhe as QTD_LISTA ações que mais movimentaram dinheiro nos últimos 3 meses."""
-    medidas = []
+    medidas, erros = [], {}
     ESTADO.update(total=len(CANDIDATAS), tarefa="lista")
     for k, tk in enumerate(CANDIDATAS):
         ESTADO.update(progresso=k, atual=tk)
         try:
             barras, _ = baixar(tk, cfg)
-        except Exception:
+        except Exception as e:
+            erros[tk] = str(e)
+            if k >= 12 and len(erros) == k + 1:   # nada funcionou até agora: para e mostra o motivo
+                break
             continue
         barras = remover_candle_incompleto(barras)
         if len(barras) < 300 or sem_negociacao_recente(barras):
@@ -685,7 +772,11 @@ def montar_lista(cfg):
         if barras[-1]["c"] >= 2 and giro > 0:
             medidas.append((giro, tk))
     if len(medidas) < 10:
-        raise RuntimeError("Não consegui baixar dados suficientes para montar a lista. Verifique a internet e tente de novo.")
+        exemplo = next(iter(erros.items()), ("", "sem detalhes"))
+        raise RuntimeError(f"Não consegui baixar as cotações (consegui {len(medidas)} de {len(CANDIDATAS)}). "
+                           f"Motivo em {exemplo[0]}: {exemplo[1]}. "
+                           "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode "
+                           "python3 ~/robo-acoes/robo.py --diagnostico e mande o resultado para o Claude.")
     medidas.sort(reverse=True)
     escolhidas = [tk for _, tk in medidas[:QTD_LISTA]]
     p = os.path.join(PASTA, "acoes.txt")
@@ -743,6 +834,10 @@ def rodar(atualizar_lista=False):
                           "ultimas": [{"en": x["en"], "ex": x["ex"], "r": x["r"] * 100,
                                        "de": D.b[x["ei"]]["d"], "ate": D.b[x["xi"]]["d"], "motivo": x["motivo"]}
                                       for x in m["ops"][-5:]][::-1]})
+        if acoes and len(falhas) == len(acoes):
+            raise RuntimeError(f"Não consegui baixar nenhuma cotação. Motivo em {falhas[0]['acao']}: {falhas[0]['erro']}. "
+                               "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode "
+                               "python3 ~/robo-acoes/robo.py --diagnostico e mande o resultado para o Claude.")
         ordem = {"COMPRAR": 0, "VENDER": 1, "MANTER": 2, "AGUARDAR": 3}
         itens.sort(key=lambda x: (ordem[x["sinal"]], -x["historico"]["media_pct"]))
         ESTADO["resultado"] = {"itens": itens, "sem_estrategia": sem, "falhas": falhas,
@@ -960,6 +1055,8 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     global SRV
+    if "--diagnostico" in sys.argv:
+        return diagnostico()
     url = f"http://127.0.0.1:{PORTA}/"
     try:
         SRV = ThreadingHTTPServer(("127.0.0.1", PORTA), Handler)
