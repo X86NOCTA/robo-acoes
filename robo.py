@@ -22,10 +22,10 @@ PASTA = os.path.dirname(os.path.abspath(__file__))
 DADOS = os.path.join(os.path.expanduser("~"), ".robo-acoes")
 os.makedirs(os.path.join(DADOS, "cache"), exist_ok=True)
 PORTA = 8765
-VERSAO = "1.4.0"
+VERSAO = "1.5.0"
 QTD_LISTA = 30            # quantas ações entram na lista quando você clica em "Atualizar lista"
 DIAS_LISTA_VELHA = 30     # depois disso o robô avisa que a lista está velha
-ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "README.md"}
+ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "instalar.ps1", "README.md"}
 # Repositório no GitHub de onde o botão "Atualizar o robô" busca versões novas (ex.: "seuusuario/robo-acoes").
 # Pode ser trocado em config.json, no campo "github_repo".
 GITHUB_REPO = "X86NOCTA/robo-acoes"
@@ -969,8 +969,8 @@ def montar_lista(cfg):
         exemplo = next(iter(erros.items()), ("", "sem detalhes"))
         raise RuntimeError(f"Não consegui baixar as cotações (consegui {len(medidas)} de {len(CANDIDATAS)}). "
                            f"Motivo em {exemplo[0]}: {exemplo[1]}. "
-                           "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode "
-                           "python3 ~/robo-acoes/robo.py --diagnostico e mande o resultado para o Claude.")
+                           "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode " +
+                           ("py %USERPROFILE%\\robo-acoes\\robo.py --diagnostico" if os.name == "nt" else "python3 ~/robo-acoes/robo.py --diagnostico") + " e mande o resultado para o Claude.")
     medidas.sort(reverse=True)
     return _gravar_lista(medidas[:QTD_LISTA], f"{len(CANDIDATAS)} ações candidatas")
 
@@ -1039,8 +1039,8 @@ def rodar(atualizar_lista=False):
                                       for x in m["ops"][-5:]][::-1]})
         if acoes and len(falhas) == len(acoes):
             raise RuntimeError(f"Não consegui baixar nenhuma cotação. Motivo em {falhas[0]['acao']}: {falhas[0]['erro']}. "
-                               "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode "
-                               "python3 ~/robo-acoes/robo.py --diagnostico e mande o resultado para o Claude.")
+                               "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode " +
+                               ("py %USERPROFILE%\\robo-acoes\\robo.py --diagnostico" if os.name == "nt" else "python3 ~/robo-acoes/robo.py --diagnostico") + " e mande o resultado para o Claude.")
         ordem = {"COMPRAR": 0, "VENDER": 1, "MANTER": 2, "AGUARDAR": 3}
         itens.sort(key=lambda x: (ordem[x["sinal"]], -x["historico"]["media_pct"]))
         ESTADO["resultado"] = {"itens": itens, "sem_estrategia": sem, "falhas": falhas,
@@ -1289,6 +1289,10 @@ def main():
     SRV.server_close()
     if REINICIAR:
         print("Reiniciando com a versão nova…")
+        if os.name == "nt":   # Windows: execv não lida bem com espaços no caminho
+            import subprocess
+            subprocess.Popen([sys.executable, os.path.join(PASTA, "robo.py"), "--sem-navegador"], cwd=PASTA)
+            os._exit(0)
         os.execv(sys.executable, [sys.executable, os.path.join(PASTA, "robo.py"), "--sem-navegador"])
 
 if __name__ == "__main__":

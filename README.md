@@ -23,6 +23,17 @@ Pronto: o robô abre no navegador. Nas próximas vezes, procure **"Horus"** no m
 > Suas operações e configurações ficam só no computador onde você usa (não vão para o GitHub).
 > Para levar para outro computador: aba **Minha carteira** → **Salvar cópia das operações**, e lá → **Carregar cópia**.
 
+## Instalar (ou atualizar) no Windows 10/11
+
+1. Aperte a tecla **Windows**, digite **PowerShell** e aperte Enter.
+2. Cole este comando e aperte Enter:
+
+```powershell
+irm https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.ps1 | iex
+```
+
+Se o computador não tiver Python, o instalador instala sozinho. No fim, aparece o atalho **Horus** na Área de Trabalho e no menu Iniciar.
+
 ## Atualizar
 
 Clique em **⬆️ Atualizar o robô** no canto de cima do programa.

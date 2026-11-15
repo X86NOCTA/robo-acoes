@@ -9,6 +9,12 @@ INSTALAR (só uma vez)
 3. Digite:   bash instalar.sh   e aperte Enter.
 4. O navegador abre sozinho com o robô. Pronto.
 
+INSTALAR NO WINDOWS
+1. Aperte a tecla Windows, digite PowerShell e aperte Enter.
+2. Cole:  irm https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.ps1 | iex
+3. Use o atalho "Horus" na Área de Trabalho ou no menu Iniciar.
+   Teste de conexão no Windows:  py %USERPROFILE%\robo-acoes\robo.py --diagnostico
+
 USAR (todo dia útil)
 1. Depois das 18h30 (quando a bolsa já fechou), abra "Horus"
    pelo menu de aplicativos.
