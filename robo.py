@@ -28,7 +28,7 @@ DIAS_LISTA_VELHA = 30     # depois disso o robô avisa que a lista está velha
 ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "README.md"}
 # Repositório no GitHub de onde o botão "Atualizar o robô" busca versões novas (ex.: "seuusuario/robo-acoes").
 # Pode ser trocado em config.json, no campo "github_repo".
-GITHUB_REPO = ""
+GITHUB_REPO = "X86NOCTA/robo-acoes"
 
 try:
     from zoneinfo import ZoneInfo

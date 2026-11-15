@@ -3,13 +3,13 @@
 #  Instala (ou atualiza) o Robô de Ações no Ubuntu.
 #
 #  Jeito mais fácil (baixa tudo do GitHub sozinho):
-#    wget -qO- https://raw.githubusercontent.com/__REPO__/main/instalar.sh | bash
+#    wget -qO- https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.sh | bash
 #
 #  Ou, de dentro da pasta do robô:
 #    bash instalar.sh
 # =============================================================
 set -e
-REPO="${ROBO_REPO:-__REPO__}"
+REPO="${ROBO_REPO:-X86NOCTA/robo-acoes}"
 DESTINO="$HOME/robo-acoes"
 ORIGEM="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 
@@ -27,7 +27,7 @@ if [ -n "$ORIGEM" ] && [ -f "$ORIGEM/robo.py" ] && [ -f "$ORIGEM/pagina.html" ];
   PASTA="$ORIGEM"
   echo "Usando os arquivos de: $PASTA"
 else
-  if [ "$REPO" = "__REPO__" ]; then
+  if [ "$REPO" = "X86NOCTA/robo-acoes" ]; then
     echo "Erro: este instalador ainda não sabe de qual GitHub baixar."; exit 1
   fi
   echo "Baixando a versão mais nova do GitHub ($REPO)…"

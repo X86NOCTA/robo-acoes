@@ -9,14 +9,16 @@ Programa para Ubuntu (Linux) que, todo dia depois do fechamento da bolsa, mostra
 
 Você manda as ordens à mão pelo app da sua corretora (ex.: NuInvest).
 
-## Instalar num computador novo
+## Instalar (ou atualizar) num computador com Ubuntu
 
-1. Nesta página do GitHub, clique no botão verde **Code** → **Download ZIP**.
-2. Descompacte numa pasta fixa (ex.: na sua pasta pessoal).
-3. Abra a pasta, clique com o botão direito num espaço vazio → **Abrir no Terminal**.
-4. Digite `bash instalar.sh` e aperte Enter.
+1. Aperte **Ctrl + Alt + T** para abrir o Terminal.
+2. Cole este comando e aperte Enter:
 
-Pronto: procure **"Robô de Ações"** no menu de aplicativos.
+```bash
+wget -qO- https://raw.githubusercontent.com/X86NOCTA/robo-acoes/main/instalar.sh | bash
+```
+
+Pronto: o robô abre no navegador. Nas próximas vezes, procure **"Robô de Ações"** no menu de aplicativos.
 
 > Suas operações e configurações ficam só no computador onde você usa (não vão para o GitHub).
 > Para levar para outro computador: aba **Minha carteira** → **Salvar cópia das operações**, e lá → **Carregar cópia**.
