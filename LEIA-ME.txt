@@ -1,0 +1,58 @@
+ROBÔ DE AÇÕES — COMO USAR
+=========================
+
+INSTALAR (só uma vez)
+1. Descompacte esta pasta num lugar fixo, por exemplo na sua pasta pessoal.
+   Não apague nem mova a pasta depois.
+2. Abra a pasta, clique com o botão direito num espaço vazio e escolha
+   "Abrir no Terminal".
+3. Digite:   bash instalar.sh   e aperte Enter.
+4. O navegador abre sozinho com o robô. Pronto.
+
+USAR (todo dia útil)
+1. Depois das 18h30 (quando a bolsa já fechou), abra "Robô de Ações"
+   pelo menu de aplicativos.
+2. Espere 1 a 3 minutos enquanto ele analisa as ações.
+3. Leia as três listas:
+   - COMPRAR: o que comprar amanhã, quantas ações, preço máximo e preço
+     de proteção.
+   - VENDER: o que vender amanhã (só se você tem).
+   - MANTER: o que continuar segurando.
+4. No dia seguinte, a partir das 10h, mande as ordens pelo app da NuInvest.
+   Antes de enviar, confira o preço no app.
+
+OS BOTÕES
+- 🔄 Atualizar sinais: recalcula comprar / vender / manter com os preços
+  mais recentes. Com o robô aberto, isso também acontece sozinho depois
+  das 18h40 nos dias úteis.
+- 📋 Atualizar lista de ações: o robô verifica mais de 100 ações e fica com
+  as 30 mais negociadas da bolsa (leva uns 3 minutos). Faça isso uma vez
+  por mês. O robô avisa quando a lista estiver velha.
+- ⬆️ Atualizar o robô (no canto de cima): mostra a sua versão e o que tem
+  nela. Quando o Claude te mandar um robo-acoes.zip novo, clique aqui,
+  escolha o arquivo e pronto: o robô se atualiza e reinicia sozinho.
+  Sua lista de ações e o valor que você investe continuam os mesmos.
+
+- 💼 Minha carteira (aba no topo): registre cada compra e venda que você
+  fizer (data, ação, quantidade e preço). O robô mostra se você está
+  ganhando ou perdendo, gráficos, sua carteira e o imposto estimado.
+  Dica: nos sinais, use o botão "Comprei — registrar na carteira".
+
+AJUSTES
+- No topo da página: quanto você tem para investir e quanto aceita perder
+  por operação (1% é um bom começo). Depois clique em "Atualizar sinais".
+- A lista de ações fica no arquivo acoes.txt (é criado quando você usa o
+  botão de atualizar a lista). Você pode editar à mão se quiser.
+
+SE DER PROBLEMA
+- "Não consegui baixar": confira o código em acoes.txt ou tente mais tarde.
+  As cotações vêm de graça do Yahoo Finance. Se ele falhar, o robô tenta a
+  brapi (crie um token grátis em brapi.dev e coloque em config.json, no
+  campo "brapi_token").
+- O robô não abre: no Terminal, rode   python3 robo.py   e veja a mensagem.
+- Registro de erros: arquivo ~/.robo-acoes/log.txt
+
+IMPORTANTE
+O robô segue regras que funcionaram no passado. Isso não garante lucro.
+Haverá perdas. Use só dinheiro que você pode perder e respeite sempre o
+preço de proteção. Isto não é recomendação de investimento.
