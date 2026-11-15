@@ -27,7 +27,7 @@ if [ -n "$ORIGEM" ] && [ -f "$ORIGEM/robo.py" ] && [ -f "$ORIGEM/pagina.html" ];
   PASTA="$ORIGEM"
   echo "Usando os arquivos de: $PASTA"
 else
-  if [ "$REPO" = "X86NOCTA/robo-acoes" ]; then
+  if [ -z "$REPO" ]; then
     echo "Erro: este instalador ainda não sabe de qual GitHub baixar."; exit 1
   fi
   echo "Baixando a versão mais nova do GitHub ($REPO)…"
