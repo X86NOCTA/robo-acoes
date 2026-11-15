@@ -1,12 +1,24 @@
 {
-  "versao": "1.3.0",
+  "versao": "1.4.0",
   "data": "2026-11-15",
   "novidades": [
-    "O robô agora se chama HORUS, com o logo do Olho de Horus.",
-    "Visual novo, futurista (cyberpunk): tema escuro com neon, letras de painel e animações.",
-    "Textos sem nome de corretora: serve para qualquer plataforma de investimento."
+    "Nova fonte principal de cotações: os arquivos oficiais da própria B3 (grátis, sem cadastro e sem bloqueio).",
+    "Na primeira vez, baixa 5 anos de histórico da B3 (pode levar alguns minutos). Depois, só os dias novos.",
+    "A lista de ações agora é montada com TODAS as ações da bolsa, direto dos dados da B3.",
+    "Corrige sozinho desdobramentos e grupamentos de ações.",
+    "Yahoo Finance e brapi continuam como reserva.",
+    "O teste de conexão (--diagnostico) agora também testa a B3."
   ],
   "historico": [
+    {
+      "versao": "1.3.0",
+      "data": "2026-11-15",
+      "novidades": [
+        "O robô agora se chama HORUS, com o logo do Olho de Horus.",
+        "Visual novo, futurista (cyberpunk): tema escuro com neon, letras de painel e animações.",
+        "Textos sem nome de corretora: serve para qualquer plataforma de investimento."
+      ]
+    },
     {
       "versao": "1.2.1",
       "data": "2026-11-15",

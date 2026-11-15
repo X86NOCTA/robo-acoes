@@ -22,7 +22,7 @@ PASTA = os.path.dirname(os.path.abspath(__file__))
 DADOS = os.path.join(os.path.expanduser("~"), ".robo-acoes")
 os.makedirs(os.path.join(DADOS, "cache"), exist_ok=True)
 PORTA = 8765
-VERSAO = "1.3.0"
+VERSAO = "1.4.0"
 QTD_LISTA = 30            # quantas ações entram na lista quando você clica em "Atualizar lista"
 DIAS_LISTA_VELHA = 30     # depois disso o robô avisa que a lista está velha
 ARQUIVOS_DO_ROBO = {"robo.py", "pagina.html", "versao.json", "LEIA-ME.txt", "instalar.sh", "README.md"}
@@ -217,6 +217,21 @@ def diagnostico():
         except Exception as e:
             print(f"  ERRO {nome}: {e}")
     teste("internet (google.com)", lambda: _yahoo_abrir("https://www.google.com", 10) and "")
+    def teste_b3():
+        d = agora().date() - timedelta(days=1)
+        while d.weekday() >= 5:
+            d -= timedelta(days=1)
+        for _ in range(6):
+            try:
+                dados = _b3_ler_zip(_b3_get(f"COTAHIST_D{d:%d%m%Y}.ZIP"))
+                extra = " (certificado do site da B3 incompleto, baixei mesmo assim)" if _B3["ssl_inseguro"] else ""
+                return f"arquivo de {d:%d/%m/%Y} com {len(dados)} ações{extra}"
+            except _Ausente:
+                d -= timedelta(days=1)
+                while d.weekday() >= 5:
+                    d -= timedelta(days=1)
+        raise RuntimeError("nenhum arquivo diário encontrado nos últimos dias")
+    teste("B3 oficial (arquivo do último pregão)", teste_b3)
     teste("Yahoo direto, sem cookie", lambda: len(json.loads(urllib.request.urlopen(urllib.request.Request(
         "https://query1.finance.yahoo.com/v8/finance/chart/PETR4.SA?range=5d&interval=1d", headers=UA), timeout=20).read())["chart"]["result"][0]["timestamp"]) and "")
     teste("Yahoo cookie/crumb", lambda: "crumb obtido" if _yahoo_crumb(True) else "sem crumb (pode funcionar mesmo assim)")
@@ -240,8 +255,181 @@ def baixar_brapi(ticker, token):
     barras.sort(key=lambda b: b["d"])
     return barras
 
+
+# ---------------------------------------------------------------- fonte oficial: B3 (arquivos COTAHIST)
+# A própria bolsa publica, de graça e sem cadastro, as cotações de todas as ações:
+# um arquivo por ano, por mês e por dia. O Horus baixa os anos uma vez só e,
+# depois, só os dias novos. Fica guardado em ~/.robo-acoes/b3/.
+import re as _re, zipfile as _zip, io as _io, ssl as _ssl
+from datetime import date as _date
+B3_URL = "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/{}"
+B3_DIR = os.path.join(DADOS, "b3")
+os.makedirs(B3_DIR, exist_ok=True)
+ANOS_B3 = 5
+_TICKER_OK = _re.compile(r"^[A-Z]{4}(3|4|5|6|7|8|11)$")
+_B3 = {"base": None, "assinatura": None, "ssl_inseguro": False}
+_RAZOES = [1/2, 1/3, 1/4, 1/5, 1/8, 1/10, 1/20, 1/100, 2, 3, 4, 5, 8, 10, 20, 100]
+
+class _Ausente(Exception):
+    pass
+
+def _b3_get(nome):
+    req = urllib.request.Request(B3_URL.format(nome), headers={"User-Agent": UA["User-Agent"], "Accept": "*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            return r.read()
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            raise _Ausente()
+        raise
+    except urllib.error.URLError as e:
+        if "CERTIFICATE_VERIFY_FAILED" not in str(e):
+            raise
+    # o site da B3 às vezes envia o certificado incompleto; os dados são públicos
+    _B3["ssl_inseguro"] = True
+    with urllib.request.urlopen(req, timeout=300, context=_ssl._create_unverified_context()) as r:
+        return r.read()
+
+def _b3_ler_zip(dados):
+    """Lê o arquivo da B3 (texto de largura fixa, 245 colunas) e guarda só ações do mercado à vista."""
+    try:
+        z = _zip.ZipFile(_io.BytesIO(dados))
+    except _zip.BadZipFile:
+        raise _Ausente()
+    out = {}
+    for nome in z.namelist():
+        with z.open(nome) as f:
+            for raw in f:
+                if raw[:2] != b"01" or raw[10:12] != b"02" or raw[24:27] != b"010":
+                    continue
+                tk = raw[12:24].decode("latin-1").strip()
+                if not _TICKER_OK.match(tk):
+                    continue
+                try:
+                    fat = int(raw[210:217]) or 1
+                    pr = lambda a, b: int(raw[a:b]) / 100 / fat
+                    d = raw[2:10].decode()
+                    out.setdefault(tk, []).append([f"{d[:4]}-{d[4:6]}-{d[6:8]}", pr(56, 69), pr(69, 82), pr(82, 95),
+                                                   pr(108, 121), int(raw[152:170]), int(raw[170:188]) / 100])
+                except ValueError:
+                    continue
+    return out
+
+def _b3_ausentes():
+    return ler_json(os.path.join(B3_DIR, "ausentes.json"), {}) or {}
+
+def _b3_tentar(chave, nome, espera_seg):
+    """Baixa um arquivo da B3 se ainda não tiver. Devolve True se o período está disponível."""
+    arq = os.path.join(B3_DIR, chave + ".json")
+    if os.path.exists(arq):
+        return True
+    aus = _b3_ausentes()
+    if chave in aus and time.time() - aus[chave] < espera_seg:
+        return False
+    try:
+        dados = _b3_ler_zip(_b3_get(nome))
+        if not dados:
+            raise _Ausente()
+    except _Ausente:
+        aus[chave] = time.time()
+        with open(os.path.join(B3_DIR, "ausentes.json"), "w") as f:
+            json.dump(aus, f)
+        return False
+    tmp = arq + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(dados, f, separators=(",", ":"))
+    os.replace(tmp, arq)
+    return True
+
+def _dias_uteis(ano, mes):
+    d = _date(ano, mes, 1)
+    while d.month == mes:
+        if d.weekday() < 5:
+            yield d
+        d += timedelta(days=1)
+
+def atualizar_b3(progresso=None):
+    """Garante o histórico dos últimos ANOS_B3 anos + o ano atual. Rápido depois da primeira vez."""
+    h = agora()
+    hoje, Y = h.date(), h.year
+    passos = [("ano", y) for y in range(Y - ANOS_B3, Y)] + [("mes", (Y, m)) for m in range(1, h.month + 1)]
+    for k, (tipo, ref) in enumerate(passos):
+        if progresso:
+            progresso(k, len(passos), f"B3 {ref if tipo == 'ano' else '%02d/%d' % (ref[1], ref[0])}")
+        if tipo == "ano":
+            if _b3_tentar(f"ano-{ref}", f"COTAHIST_A{ref}.ZIP", 7 * 86400):
+                continue
+            meses = [(ref, m) for m in range(1, 13)]        # ano ainda não publicado: usa os meses
+        else:
+            meses = [ref]
+        for (y, m) in meses:
+            atual = (y, m) == (Y, h.month)
+            if not atual and _b3_tentar(f"mes-{y}{m:02d}", f"COTAHIST_M{m:02d}{y}.ZIP", 86400):
+                continue
+            for d in _dias_uteis(y, m):                    # mês sem arquivo mensal: vai dia a dia
+                if d > hoje or (d == hoje and h.hour < 20):
+                    continue
+                recente = (hoje - d).days <= 5
+                _b3_tentar(f"dia-{d:%Y%m%d}", f"COTAHIST_D{d:%d%m%Y}.ZIP", 3600 if recente else 30 * 86400)
+
+def _b3_base():
+    """Junta todos os arquivos baixados num só lugar: {ação: [[data, abertura, máx, mín, fech, qtd, R$], ...]}."""
+    arqs = sorted(a for a in os.listdir(B3_DIR) if a.endswith(".json") and a[:4] in ("ano-", "mes-", "dia-"))
+    assinatura = tuple((a, os.path.getmtime(os.path.join(B3_DIR, a))) for a in arqs)
+    if _B3["base"] is not None and _B3["assinatura"] == assinatura:
+        return _B3["base"]
+    por_dia = {}
+    for a in arqs:
+        dados = ler_json(os.path.join(B3_DIR, a), {}) or {}
+        for tk, linhas in dados.items():
+            m = por_dia.setdefault(tk, {})
+            for l in linhas:
+                m[l[0]] = l
+    base = {tk: [m[d] for d in sorted(m)] for tk, m in por_dia.items()}
+    _B3.update(base=base, assinatura=assinatura)
+    return base
+
+def serie_b3(tk):
+    """Histórico de uma ação, corrigindo desdobramentos e grupamentos (senão parecem quedas/altas enormes)."""
+    linhas = _b3_base().get(tk)
+    if not linhas:
+        return None
+    fator, out = 1.0, [None] * len(linhas)
+    for i in range(len(linhas) - 1, -1, -1):
+        d, o, h, l, c, q, v = linhas[i]
+        out[i] = {"d": d, "o": o * fator, "h": h * fator, "l": l * fator, "c": c * fator, "v": q / fator}
+        if i > 0 and linhas[i - 1][4]:
+            r = o / linhas[i - 1][4]
+            if r < 0.6 or r > 1.7:
+                k = min(_RAZOES, key=lambda x: abs(r / x - 1))
+                if abs(r / k - 1) < 0.1:
+                    fator *= k
+    return out
+
+def ranking_b3(qtd):
+    """As ações que mais movimentaram dinheiro nos últimos 60 pregões (direto dos arquivos da B3)."""
+    base, hoje, med = _b3_base(), agora().date(), []
+    for tk, linhas in base.items():
+        if len(linhas) < 300:
+            continue
+        try:
+            if (hoje - datetime.strptime(linhas[-1][0], "%Y-%m-%d").date()).days > 10 or linhas[-1][4] < 2:
+                continue
+        except Exception:
+            continue
+        ult = linhas[-60:]
+        med.append((sum(l[6] for l in ult) / len(ult), tk))
+    med.sort(reverse=True)
+    return med[:qtd]
+
 def baixar(ticker, cfg):
-    """Baixa com cache de 1 dia. Tenta Yahoo; se falhar, tenta brapi."""
+    """Primeiro os arquivos oficiais da B3. Se não tiver a ação lá, tenta Yahoo e depois brapi."""
+    try:
+        b = serie_b3(ticker)
+        if b and len(b) >= 200 and not sem_negociacao_recente(b):
+            return b, "B3 (oficial)"
+    except Exception:
+        pass
     hoje = agora().strftime("%Y-%m-%d")
     cache = os.path.join(DADOS, "cache", f"{ticker}.json")
     try:
@@ -753,6 +941,12 @@ def sem_negociacao_recente(barras):
 
 def montar_lista(cfg):
     """Escolhe as QTD_LISTA ações que mais movimentaram dinheiro nos últimos 3 meses."""
+    try:
+        medidas = ranking_b3(QTD_LISTA)
+    except Exception:
+        medidas = []
+    if len(medidas) >= 10:
+        return _gravar_lista(medidas, "todas as ações da B3")
     medidas, erros = [], {}
     ESTADO.update(total=len(CANDIDATAS), tarefa="lista")
     for k, tk in enumerate(CANDIDATAS):
@@ -778,7 +972,10 @@ def montar_lista(cfg):
                            "Tente de novo em alguns minutos. Se continuar, abra o Terminal, rode "
                            "python3 ~/robo-acoes/robo.py --diagnostico e mande o resultado para o Claude.")
     medidas.sort(reverse=True)
-    escolhidas = [tk for _, tk in medidas[:QTD_LISTA]]
+    return _gravar_lista(medidas[:QTD_LISTA], f"{len(CANDIDATAS)} ações candidatas")
+
+def _gravar_lista(medidas, origem):
+    escolhidas = [tk for _, tk in medidas]
     p = os.path.join(PASTA, "acoes.txt")
     if os.path.exists(p):
         try:
@@ -787,9 +984,9 @@ def montar_lista(cfg):
             pass
     hoje = agora()
     with open(p, "w", encoding="utf-8") as f:
-        f.write(f"# Lista montada pelo robô em {hoje.strftime('%d/%m/%Y')}: as {len(escolhidas)} ações mais negociadas.\n")
+        f.write(f"# Lista montada pelo Horus em {hoje.strftime('%d/%m/%Y')}: as {len(escolhidas)} ações mais negociadas ({origem}).\n")
         f.write("# Você pode editar à mão. Clicar em 'Atualizar lista de ações' substitui esta lista.\n")
-        for giro, tk in medidas[:QTD_LISTA]:
+        for giro, tk in medidas:
             f.write(f"{tk:<8} # cerca de R$ {giro/1e6:,.0f} milhões por dia\n".replace(",", "."))
     with open(os.path.join(DADOS, "lista_info.json"), "w", encoding="utf-8") as f:
         json.dump({"data": hoje.strftime("%Y-%m-%d"), "qtd": len(escolhidas), "acoes": escolhidas}, f)
@@ -801,7 +998,13 @@ def rodar(atualizar_lista=False):
         ESTADO.update(status="rodando", progresso=0, erro=None, tarefa="lista" if atualizar_lista else "sinais")
     try:
         cfg = ler_config()
+        aviso_b3 = None
+        try:
+            atualizar_b3(lambda k, n, txt: ESTADO.update(tarefa="b3", progresso=k, total=n, atual=txt))
+        except Exception as e:
+            aviso_b3 = f"Não consegui atualizar pela B3 ({e}). Usei as outras fontes."
         if atualizar_lista:
+            ESTADO.update(tarefa="lista", progresso=0)
             montar_lista(cfg)
         acoes = ler_acoes()
         ESTADO.update(total=len(acoes), progresso=0, tarefa="sinais")
@@ -842,7 +1045,7 @@ def rodar(atualizar_lista=False):
         itens.sort(key=lambda x: (ordem[x["sinal"]], -x["historico"]["media_pct"]))
         ESTADO["resultado"] = {"itens": itens, "sem_estrategia": sem, "falhas": falhas,
                                "fechamento": ultima, "gerado": agora().strftime("%d/%m/%Y %H:%M"),
-                               "fontes": sorted(fontes), "config": cfg}
+                               "fontes": sorted(fontes), "config": cfg, "aviso_fonte": aviso_b3}
         ESTADO.update(status="pronto", progresso=len(acoes), atual="", tarefa="")
         with open(os.path.join(DADOS, "ultimo_resultado.json"), "w", encoding="utf-8") as f:
             json.dump(ESTADO["resultado"], f, ensure_ascii=False)
@@ -931,6 +1134,12 @@ CARTEIRA = Carteira(DADOS)
 
 def preco_atual(tk, buscar=True):
     """Último fechamento da ação, usando o que o robô já baixou (ou baixando agora)."""
+    try:
+        b = serie_b3(tk)
+        if b:
+            return b[-1]["c"], b[-1]["d"]
+    except Exception:
+        pass
     c = ler_json(os.path.join(DADOS, "cache", f"{tk}.json"))
     if c and c.get("barras"):
         return c["barras"][-1]["c"], c["barras"][-1]["d"]

@@ -46,9 +46,11 @@ AJUSTES
 
 SE DER PROBLEMA
 - "Não consegui baixar": confira o código em acoes.txt ou tente mais tarde.
-  As cotações vêm de graça do Yahoo Finance. Se ele falhar, o robô tenta a
-  brapi (crie um token grátis em brapi.dev e coloque em config.json, no
-  campo "brapi_token").
+  As cotações vêm dos arquivos oficiais da B3 (grátis). Na primeira vez o
+  Horus baixa 5 anos de histórico e pode demorar alguns minutos. Se a B3
+  falhar, ele tenta o Yahoo Finance e a brapi (para a brapi, crie um token
+  grátis em brapi.dev e coloque em config.json, no campo "brapi_token").
+- Teste de conexão: no Terminal, rode  python3 ~/robo-acoes/robo.py --diagnostico
 - O robô não abre: no Terminal, rode   python3 robo.py   e veja a mensagem.
 - Registro de erros: arquivo ~/.robo-acoes/log.txt
 

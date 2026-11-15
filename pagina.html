@@ -347,10 +347,10 @@ async function tick(){
     infoLista(e.lista);
     const b=$('#barra');
     if(e.status==='rodando'){b.hidden=false;b.firstElementChild.style.width=(e.total?e.progresso/e.total*100:0)+'%';
-      $('#status').textContent=e.tarefa==='lista'?`Montando a lista: verificando ${e.atual||'…'} (${e.progresso} de ${e.total})… leva uns 3 minutos.`:`Analisando ${e.atual||'…'} (${e.progresso} de ${e.total})… leva 1 a 3 minutos.`;$('#atualizar').disabled=true;$('#atualizarLista').disabled=true;}
+      $('#status').textContent=e.tarefa==='b3'?`Baixando o histórico oficial da B3: ${e.atual||'…'} (${e.progresso} de ${e.total})… na primeira vez demora alguns minutos; depois é rápido.`:e.tarefa==='lista'?`Montando a lista: verificando ${e.atual||'…'} (${e.progresso} de ${e.total})… leva uns 3 minutos.`:`Analisando ${e.atual||'…'} (${e.progresso} de ${e.total})… leva 1 a 3 minutos.`;$('#atualizar').disabled=true;$('#atualizarLista').disabled=true;}
     else{b.hidden=true;$('#atualizar').disabled=false;$('#atualizarLista').disabled=false;
       if(e.status==='erro')$('#status').innerHTML=`<span class="verm">Erro: ${e.erro}</span>`;
-      else if(e.resultado)$('#status').innerHTML=`Sinais com base no fechamento de <b>${dataBR(e.resultado.fechamento)}</b> · atualizado em ${e.resultado.gerado}`;}
+      else if(e.resultado)$('#status').innerHTML=`Sinais com base no fechamento de <b>${dataBR(e.resultado.fechamento)}</b> · atualizado em ${e.resultado.gerado}${e.resultado.fontes&&e.resultado.fontes.length?' · fonte: '+e.resultado.fontes.join(', '):''}${e.resultado.aviso_fonte?'<br><span style="color:var(--amar)">'+e.resultado.aviso_fonte+'</span>':''}`;}
     if(e.resultado)render(e.resultado);
     setTimeout(tick,e.status==='rodando'?1500:15000);
   }catch(err){
